@@ -6,27 +6,17 @@ import sys
 import NiverCode
 from datetime import date
 
-version = "1.2"
+version = "1.5"
 
 def intro():
-	msg = "Assistente - version {} / criador: VitorPL".format(version)
-	print("~" * len(msg) +  "\n{}\n".format(msg)  +   "~" * len(msg))
+	msg = f"Assistente - version {version} / criador: VitorPL"
+	print("~" * len(msg) +  f"\n{msg}\n"  +   "~" * len(msg))
 
 lista_erros = [
 		"Não entendi nada",
 		"Desculpe, não entendi",
 		"Repita novamente por favor"
 ]
-
-conversas = {
-	"oi": "Olá, tudo bem?",
-	"sim e você": "Estou bem obrigada por perguntar"
-}
-
-comandos = {
-	"desligar": "desligando",
-	"reiniciar": "reiniciando"
-}
 
 def calcula(entrada):
 	if "mais" in entrada or "+" in entrada:

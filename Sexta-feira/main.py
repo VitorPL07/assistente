@@ -1,31 +1,37 @@
 import speech_recognition as sr
 import pyttsx3
 import config
-from tkinter import ttk, Frame, PhotoImage, Entry, Button, Checkbutton, LEFT, RIGHT, Tk, Label, messagebox, IntVar
+import tkinter
+from tkinter import messagebox
 from random import choice
 import DataBase
 from platform import system
 import getpass
+import conversar
+
+# Gambiarra
+username = getpass.getuser()
 
 if system() == "Linux":
-	en = pyttsx3.init()
-	voices = en.getProperty('voices')
-	en.setProperty('rate', 175)
-	for voice in voices:
-		if voice.languages[0] == b'\x05pt-br':
-			en.setProperty('voice', voice.id)
-			break
+    caminho_img = f"/home/{username}/Documentos/Friday Image/image/LogoPrincipal.png"
+
+    en = pyttsx3.init()
+    voices = en.getProperty('voices')
+    en.setProperty('rate', 175)
+    for voice in voices:
+        if voice.languages[0] == b'\x05pt-br':
+            en.setProperty('voice', voice.id)
+            break
 
 else:
-	en = pyttsx3.init('sapi5')
+    caminho_img = f"C:/Users/{username}/Documents/Friday Image/image/LogoPrincipal.png"
+    caminho_ico = f"C:/Users/{username}/Documents/Friday Image/image/logo_mini.ico"
+    en = pyttsx3.init('sapi5')
 
 city = ""
 User_Global = ""
 contagem = 0
-
-# Gambiarra
-username = getpass.getuser()
-caminho_img = f"/home/{username}/Área de Trabalho/Sexta-feira/image/logo_mini.png"
+pergunta = ""
 
 # Sistema de som
 def sai_som(reposta):
@@ -33,14 +39,18 @@ def sai_som(reposta):
     en.runAndWait()
 
 # Cabeça da janela
-jan = Tk()
+jan = tkinter.Tk()
 jan.geometry("600x350+200+200")
 jan.title("Friday System - Login")
 jan.resizable(width=False, height=False)
 jan.configure(bg="white")
+if system() == "Windows":
+    jan.iconbitmap(default=caminho_ico)
+else:
+    pass
 
 # Icones
-logo = PhotoImage(file=caminho_img)
+logo = tkinter.PhotoImage(file=caminho_img)
 
 #Definir funções
 def Logar():
@@ -49,6 +59,8 @@ def Logar():
     global User_Global
     User_Global = User
     global city
+    global pergunta
+    pergunta = var.get()
     DataBase.cursor.execute("""
     SELECT * FROM LoginUsers
     WHERE (User = ? and Password = ?)
@@ -66,9 +78,11 @@ def Logar():
 def RegisterData():
     global contagem
     if contagem % 2 == 0:
+        Lb_Init['text'] = "Register System"
         bt_Confirm.place(x=5000, y=5000)
         Lb_City.place(x=50, y=160)
         En_City.place(x=170, y=165)
+        bt_Check.place(x=5000, y=5000)
 
     elif contagem % 2 == 1:
         Name = En_User.get()
@@ -80,6 +94,8 @@ def RegisterData():
             Lb_City.place(x=5000, y=5000)
             En_City.place(x=5000, y=5000)
             bt_Confirm.place(x=100, y=220)
+            bt_Check.place(x=65, y=170)
+            Lb_Init['text'] = "Login System"
 
         else:
             DataBase.cursor.execute("""
@@ -92,44 +108,49 @@ def RegisterData():
             Lb_City.place(x=5000, y=5000)
             En_City.place(x=5000, y=5000)
             bt_Confirm.place(x=100, y=220)
+            bt_Check.place(x=65, y=170)
+            Lb_Init['text'] = "Login System"
 
     
     contagem += 1
 
 # Frames
-FrameEsquerdo = Frame(jan, width='198', height='350', bg='#4169E1', relief='raise')
-FrameEsquerdo.pack(side=LEFT)
-FrameDireito = Frame(jan, width='400', height='350', bg='#6A5ACD', relief='raise')
-FrameDireito.pack(side=RIGHT)
+FrameEsquerdo = tkinter.Frame(jan, width='198', height='350', bg='#4169E1', relief='raise')
+FrameEsquerdo.pack(side=tkinter.LEFT)
+FrameDireito = tkinter.Frame(jan, width='400', height='350', bg='#6A5ACD', relief='raise')
+FrameDireito.pack(side=tkinter.RIGHT)
 
 # Widgets Left
-Icon = Label(FrameEsquerdo, image=logo, bg="#4169E1")
-Icon.place(x=60, y=100)
-Name = Label(FrameEsquerdo, text='Friday', font=('FreeSerif', 25), bg='#4169E1')
-Name.place(x=50, y=180)
+Icon = tkinter.Label(FrameEsquerdo, image=logo)
+Icon.place(x=-50, y=-110)
 
 # Widgets Right
 #      Labels
-Lb_Init = Label(FrameDireito, text='Login System', font=('Comic Sans, bold', 20), bg='#6A5ACD', fg='white')
+Lb_Init = tkinter.Label(FrameDireito, text='Login System', font=('Comic Sans, bold', 20), bg='#6A5ACD', fg='white')
 Lb_Init.place(x=50, y=30)
-Lb_User = Label(FrameDireito, text='Username:', font=('Comic Sans', 15), bg='#6A5ACD')
+Lb_User = tkinter.Label(FrameDireito, text='Username:', font=('Comic Sans', 15), bg='#6A5ACD')
 Lb_User.place(x=50, y=100)
-Lb_Pass = Label(FrameDireito, text='Password:', font=('Comic Sans', 15), bg='#6A5ACD')
+Lb_Pass = tkinter.Label(FrameDireito, text='Password:', font=('Comic Sans', 15), bg='#6A5ACD')
 Lb_Pass.place(x=50, y=130)
-Lb_City = Label(FrameDireito, text='City:', font=('Comic Sans', 15), bg='#6A5ACD')
+Lb_City = tkinter.Label(FrameDireito, text='City:', font=('Comic Sans', 15), bg='#6A5ACD')
 
 #      Entrys
-En_User = Entry(FrameDireito)
+En_User = tkinter.Entry(FrameDireito)
 En_User.place(x=170, y=105)
-En_Pass = Entry(FrameDireito, show='*')
+En_Pass = tkinter.Entry(FrameDireito, show="*")
 En_Pass.place(x=170, y=135)
-En_City = Entry(FrameDireito)
+En_City = tkinter.Entry(FrameDireito)
 
 #      Buttons
-bt_Confirm = Button(FrameDireito, text='Confirm', activebackground='#6495ED', width='20', command=Logar)
+bt_Confirm = tkinter.Button(FrameDireito, text='Confirm', activebackground='#6495ED', width='20', command=Logar)
 bt_Confirm.place(x=100, y=220)
-bt_Register = Button(FrameDireito, text='Register', activebackground='#6495ED', width='20', command=RegisterData)
+bt_Register = tkinter.Button(FrameDireito, text='Register', activebackground='#6495ED', width='20', command=RegisterData)
 bt_Register.place(x=100, y=270)
+
+#       CheckButtom
+var = tkinter.IntVar()
+bt_Check = tkinter.Checkbutton(FrameDireito, text="Start with voice command",font=("Comic Sans", 10), variable=var, bg='#6A5ACD', activebackground='#6A5ACD')
+bt_Check.place(x=90, y=170)
 
 #Deixar a janela em loop
 def pythonExit():
@@ -157,22 +178,54 @@ def assistente():
 
     while True:
         resposta_erro_aleatoria = choice(config.lista_erros)
-        #rec = sr.Recognizer()
 
-        #with sr.Microphone() as s:
-            #rec.adjust_for_ambient_noise(s)
-            #audio = rec.listen(s, timeout=1, phrase_time_limit=1)
+        def microfone_entrada():
+            if pergunta == 0:
+                ent = input("Pode digitar: ")
+                return ent
 
+            elif pergunta == 1:
+                rec = sr.Recognizer()
+
+                with sr.Microphone() as s:
+                    rec.adjust_for_ambient_noise(s)
+                    audio = rec.listen(s, phrase_time_limit=5)
+
+                    while True:
+                        try:
+                            ent = rec.recognize_google(audio, language="pt-br")
+                            return ent
+                        except sr.UnknownValueError:
+                            sai_som(resposta_erro_aleatoria)
+
+        def microfone_fri():
+            if pergunta == 0:
+                ent = input("Me chame: ")
+                return ent
+
+            elif pergunta == 1:
+                rec = sr.Recognizer()
+
+                with sr.Microphone() as s:
+                    rec.adjust_for_ambient_noise(s)
+                    audio = rec.listen(s, phrase_time_limit=2)
+
+                    while True:
+                        try:
+                            ent = rec.recognize_google(audio, language="pt-br")
+                            return ent
+                        except sr.UnknownValueError:
+                            sai_som(resposta_erro_aleatoria)
+        
         while True:
-            fri = input("Me chame: ")
+            fri = microfone_fri()
             fri = fri.lower()
 
             if "sexta" in fri and "feira" in fri:
                 sai_som("Sim mestre")
                 while True:
                     try:
-                        #audio = rec.listen(s, timeout=1, phrase_time_limit=3)
-                        entrada = input("O que deseja: ")
+                        entrada = microfone_entrada()
                         entrada = entrada.lower()
                         print("User: {}".format(entrada.capitalize()))
 
@@ -225,8 +278,18 @@ def assistente():
                         elif "informações" in entrada and "cidade" in entrada:
 
                             resposta = "Mostrando informações da cidade"
-                        else:
-                            resposta = config.conversas[entrada]
+                        elif "vamos" in entrada and "conversar" in entrada:
+                            print("Tudo bem :)")
+                            sai_som("Tudo bem")
+                            while True:
+                                entrada = microfone_entrada()
+                                if entrada == "sair":
+                                    resposta = "Okey, se precisar é só chamar"
+                                    break
+
+                                conv = conversar.conversas[entrada]
+                                print(f"Assistente: {conv}")
+                                sai_som(conv)
 
                         if resposta == "Mostrando informações da cidade":
                             # mostra informações da cidade
@@ -243,7 +306,6 @@ def assistente():
                             v_direc = lista_infos[8]
                             nebulosidade = lista_infos[9]
                             id_da_cidade = lista_infos[10]
-
 
                             print("Assistente:")
                             print("Mostrando informações de {}\n\n".format(city))
@@ -262,13 +324,11 @@ def assistente():
                             print("Assistente: {}".format(resposta))
                             sai_som("{}".format(resposta))
                             break
-                    except sr.UnknownValueError:
-                        sai_som(resposta_erro_aleatoria)
                     except KeyError:
                         pass
 
 
 if __name__ == '__main__':
     config.intro()
-    sai_som("Iniciando")
+    sai_som("Carregando")
     assistente()
